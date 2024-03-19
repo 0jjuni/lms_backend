@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<ul>
+{% for lecture in lectures %}
+  <li>{{ lecture.course_number }} - {{ lecture.course_name }}</li>
+{% endfor %}
+</ul>
+
+
+</body>
+</html>
