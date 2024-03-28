@@ -22,11 +22,9 @@ from rest_framework_simplejwt.views import (
 )
 
 urlpatterns = [
-    path("login/", views.login, name="login"),
-    path("join/", views.join, name="join"),
     path('token/', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('register/', views.RegisterView.as_view(), name='auth_register'),
-    path('change_password/', views.ChangePasswordView.as_view(), name='change-password'),
+    path('change_password/<int:pk>/', views.ChangePasswordView.as_view(), name='auth_change_password'),
     path('', views.getRoutes)
 ]

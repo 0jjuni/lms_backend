@@ -20,6 +20,6 @@ from . import views
 
 
 urlpatterns = [
-    path("", views.home, name="home"),
-    path('test/', views.TotalLectureListCreate.as_view()),
+    path('', views.getRoutes),
+    path('lecture_info/', views.TotalLectureListCreate.as_view()),
 ]
