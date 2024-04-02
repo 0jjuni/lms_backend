@@ -7,6 +7,7 @@ def getRoutes(request):
     routes = [
         '/admin/',
         '/secure_entry/',
-        '/sugang_register/'
+        '/sugang_register/',
+        '/swagger/'
     ]
     return Response(routes)
