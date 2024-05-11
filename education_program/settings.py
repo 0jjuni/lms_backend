@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import environ
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -44,6 +47,7 @@ INSTALLED_APPS = [
     "secure_entry",
     'rest_framework_simplejwt.token_blacklist',
     'drf_yasg',
+    "team_connect",
 ]
 
 MIDDLEWARE = [
@@ -89,14 +93,20 @@ REST_FRAMEWORK = {
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# 환경 변수 설정 객체를 생성합니다.
+env = environ.Env()
+
+# .env 파일을 읽습니다.
+environ.Env.read_env()
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql', # mysqlclient librarly 설치
-        'NAME': 'lecture',
-        'USER': 'root',
-        'PASSWORD': '0000', # mariaDB 설치 시 입력한 root 비밀번호 입력
-        'HOST': 'localhost',
-        'PORT': '3219'
+        'ENGINE': 'django.db.backends.mysql',  # MySQL을 사용한다고 가정
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST'),
+        'PORT': env('DB_PORT')
     }
 }
 

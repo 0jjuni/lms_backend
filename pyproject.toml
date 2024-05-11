@@ -16,6 +16,9 @@ djangorestframework-simplejwt = "^5.3.1"
 pyjwt = "^2.8.0"
 drf-yasg = "^1.21.7"
 setuptools = "^69.2.0"
+python-decouple = "^3.8"
+django-environ = "^0.11.2"
+
 
 
 [build-system]
