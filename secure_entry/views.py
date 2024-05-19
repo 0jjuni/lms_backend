@@ -58,7 +58,6 @@ def getRoutes(request):
         '/secure_entry/token/refresh/',
         'user/<str:enrollment_number>/',
         'user/me/'
-        # '/secure_entry/register/',
         # '/secure_entry/change_password/'
 
     ]
