@@ -51,34 +51,34 @@ class NoticeBoard(models.Model):
 
 
 
-# class TimeTable(models.Model):
-#     course = models.ForeignKey('courses.course', on_delete=models.CASCADE)
-#
-#     SUNDAY = 0
-#     MONDAY = 1
-#     TUESDAY = 2
-#     WEDNESDAY = 3
-#     THURSDAY = 4
-#     FRIDAY = 5
-#     SATURDAY = 6
-#
-#     day_choices = [
-#         (SUNDAY, 'Sunday'),
-#         (MONDAY, 'Monday'),
-#         (TUESDAY, 'Tuesday'),
-#         (WEDNESDAY, 'Wednesday'),
-#         (THURSDAY, 'Thursday'),
-#         (FRIDAY, 'Friday'),
-#         (SATURDAY, 'Saturday'),
-#     ]
-#
-#     day = models.PositiveSmallIntegerField(
-#         choices=day_choices,
-#         blank=False
-#     )
-#
-#     start_time = models.TimeField()
-#     end_time = models.TimeField()
-#
-#     class Meta:
-#         verbose_name_plural = "time table"
+class TimeTable(models.Model):
+    course = models.ForeignKey('courses.Courses', on_delete=models.CASCADE)
+
+    SUNDAY = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+
+    day_choices = [
+        (SUNDAY, 'Sunday'),
+        (MONDAY, 'Monday'),
+        (TUESDAY, 'Tuesday'),
+        (WEDNESDAY, 'Wednesday'),
+        (THURSDAY, 'Thursday'),
+        (FRIDAY, 'Friday'),
+        (SATURDAY, 'Saturday'),
+    ]
+
+    day = models.PositiveSmallIntegerField(
+        choices=day_choices,
+        blank=False
+    )
+
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+
+    class Meta:
+        verbose_name_plural = "time table"

@@ -49,10 +49,14 @@ INSTALLED_APPS = [
     'drf_yasg',
     "team_connect",
     "base",
+<<<<<<< HEAD
     "noticeboard",
     "homework",
     "qna",
 
+=======
+    "courses"
+>>>>>>> f118e39 (﻿time_table의 주석 해제 및 course app추가후 courses 모델 추가)
 ]
 
 MIDDLEWARE = [
