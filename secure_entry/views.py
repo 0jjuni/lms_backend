@@ -1,25 +1,55 @@
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-
+from rest_framework import serializers, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-
+from django.contrib.auth.hashers import check_password
 from .models import User, Student, Professor
 from .serializers import UserSerializer, StudentSerializer, ProfessorSerializer
-
+from .serializers import ChangePasswordSerializer
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
         token['enrollment_number'] = user.enrollment_number
         token['username'] = user.username
-        if user.user_type == 'S':
-            token['batch'] = user.student.batch.name
+        token['user_type'] = user.user_type
         return token
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        data['enrollment_number'] = self.user.enrollment_number
+        data['username'] = self.user.username
+        data['user_type'] = self.user.user_type
+        return data
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_student(request):
+    data = request.data
+    user_serializer = UserSerializer(data=data)
+    if user_serializer.is_valid():
+        user = user_serializer.save(user_type=User.STUDENT)
+        student = Student.objects.create(user=user)
+        student_serializer = StudentSerializer(student)
+        return Response(student_serializer.data, status=status.HTTP_201_CREATED)
+    return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_professor(request):
+    data = request.data
+    user_serializer = UserSerializer(data=data)
+    if user_serializer.is_valid():
+        user = user_serializer.save(user_type=User.PROFESSOR)
+        professor = Professor.objects.create(user=user)
+        professor_serializer = ProfessorSerializer(professor)
+        return Response(professor_serializer.data, status=status.HTTP_201_CREATED)
+    return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 def userDetail(request, enrollment_number):
@@ -51,14 +81,27 @@ def currentUserDetail(request):
     return Response(serializer.data)
 
 
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def change_password(request):
+    serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'success': 'Password changed successfully.'}, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['GET'])
 def getRoutes(request):
     routes = [
         '/secure_entry/token/',
         '/secure_entry/token/refresh/',
-        'user/<str:enrollment_number>/',
-        'user/me/'
-        # '/secure_entry/change_password/'
-
+        '/secure_entry/create_student/',
+        '/secure_entry/create_professor/',
+        '/secure_entry/user/<str:enrollment_number>/',
+        '/secure_entry/user/me/',
+        '/secure_entry/change_password/',
     ]
     return Response(routes)

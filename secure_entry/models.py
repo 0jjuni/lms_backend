@@ -5,15 +5,17 @@ from django.utils.translation import gettext_lazy as _
 from base.models import Batch
 
 class UserManager(BaseUserManager):
-    def create_user(self, enrollment_number, username, password, **extra_fields):
+    def create_user(self, enrollment_number, username, password=None, **extra_fields):
         if not enrollment_number:
             raise ValueError(_("The Enrollment Number must be set"))
+        if not username:
+            raise ValueError(_("The Username must be set"))
         user = self.model(enrollment_number=enrollment_number, username=username, **extra_fields)
         user.set_password(password)
-        user.save()
+        user.save(using=self._db)
         return user
 
-    def create_superuser(self, enrollment_number, username, password, **extra_fields):
+    def create_superuser(self, enrollment_number, username, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
@@ -45,14 +47,14 @@ class User(AbstractUser):
 
     groups = models.ManyToManyField(
         Group,
-        related_name='secure_entry_user_groups',  # related_name 추가
+        related_name='secure_entry_user_groups',
         blank=True,
         help_text=_('The groups this user belongs to. A user will get all permissions granted to each of their groups.'),
         verbose_name=_('groups')
     )
     user_permissions = models.ManyToManyField(
         Permission,
-        related_name='secure_entry_user_permissions',  # related_name 추가
+        related_name='secure_entry_user_permissions',
         blank=True,
         help_text=_('Specific permissions for this user.'),
         verbose_name=_('user permissions')
@@ -63,9 +65,19 @@ class User(AbstractUser):
 
     objects = UserManager()
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if self.user_type == self.STUDENT:
+            Student.objects.get_or_create(user=self)
+        elif self.user_type == self.PROFESSOR:
+            Professor.objects.get_or_create(user=self)
+
+    def __str__(self):
+        return self.username
+
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    batch = models.ForeignKey(Batch, on_delete=models.SET_NULL, null=True)
+    #batch = models.ForeignKey(Batch, on_delete=models.SET_NULL, null=True)
 
     def __str__(self) -> str:
         return f'{self.user.username}'
