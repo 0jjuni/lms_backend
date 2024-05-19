@@ -48,7 +48,9 @@ INSTALLED_APPS = [
     #'rest_framework_simplejwt.token_blacklist',
     'drf_yasg',
     "team_connect",
-    "base"
+    "base",
+    "noticeboard",
+
 ]
 
 MIDDLEWARE = [

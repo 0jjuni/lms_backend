@@ -8,6 +8,7 @@ def getRoutes(request):
         '/admin/',
         '/secure_entry/',
         '/sugang_register/',
+        '/noticeboard/',
         '/swagger/'
     ]
     return Response(routes)
