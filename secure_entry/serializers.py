@@ -24,6 +24,25 @@ class ProfessorSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class UserStudentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'enrollment_number', 'username', 'user_type']
+
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data, user_type=User.STUDENT)
+        Student.objects.create(user=user)
+        return user
+
+class UserProfessorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'enrollment_number', 'username', 'user_type']
+
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data, user_type=User.PROFESSOR)
+        Professor.objects.create(user=user)
+        return user
 
 
 class ChangePasswordSerializer(serializers.Serializer):

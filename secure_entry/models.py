@@ -5,27 +5,32 @@ from django.utils.translation import gettext_lazy as _
 from base.models import Batch
 
 class UserManager(BaseUserManager):
-    def create_user(self, enrollment_number, username, password=None, **extra_fields):
+    def create_user(self, enrollment_number, username, password, **extra_fields):
         if not enrollment_number:
-            raise ValueError(_("The Enrollment Number must be set"))
+            raise ValueError(_("학번을 반드시 입력해야 합니다."))
         if not username:
-            raise ValueError(_("The Username must be set"))
+            raise ValueError(_("사용자 이름을 반드시 입력해야 합니다."))
+        if not password:
+            raise ValueError(_("비밀번호를 반드시 입력해야 합니다."))
+
         user = self.model(enrollment_number=enrollment_number, username=username, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, enrollment_number, username, password=None, **extra_fields):
+    def create_superuser(self, enrollment_number, username, password, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
+        extra_fields.setdefault('user_type', None)
 
         if extra_fields.get('is_staff') is not True:
-            raise ValueError(_('Superuser must have is_staff=True.'))
+            raise ValueError(_('슈퍼유저는 is_staff=True 이어야 합니다.'))
         if extra_fields.get('is_superuser') is not True:
-            raise ValueError(_('Superuser must have is_superuser=True.'))
+            raise ValueError(_('슈퍼유저는 is_superuser=True 이어야 합니다.'))
 
         return self.create_user(enrollment_number, username, password, **extra_fields)
+
 
 class User(AbstractUser):
     enrollment_number = models.CharField(max_length=9, unique=True)
@@ -33,23 +38,21 @@ class User(AbstractUser):
 
     STUDENT = 'S'
     PROFESSOR = 'P'
-
     USER_TYPE_CHOICES = (
         (STUDENT, 'Student'),
         (PROFESSOR, 'Professor'),
     )
-
     user_type = models.CharField(
         max_length=1,
         choices=USER_TYPE_CHOICES,
         default=STUDENT
     )
-
     groups = models.ManyToManyField(
         Group,
         related_name='secure_entry_user_groups',
         blank=True,
-        help_text=_('The groups this user belongs to. A user will get all permissions granted to each of their groups.'),
+        help_text=_(
+            'The groups this user belongs to. A user will get all permissions granted to each of their groups.'),
         verbose_name=_('groups')
     )
     user_permissions = models.ManyToManyField(
@@ -66,11 +69,13 @@ class User(AbstractUser):
     objects = UserManager()
 
     def save(self, *args, **kwargs):
+        creating = self._state.adding
         super().save(*args, **kwargs)
-        if self.user_type == self.STUDENT:
-            Student.objects.get_or_create(user=self)
-        elif self.user_type == self.PROFESSOR:
-            Professor.objects.get_or_create(user=self)
+        if creating:
+            if self.user_type == self.STUDENT:
+                Student.objects.get_or_create(user=self)
+            elif self.user_type == self.PROFESSOR:
+                Professor.objects.get_or_create(user=self)
 
     def __str__(self):
         return self.username
