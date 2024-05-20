@@ -10,6 +10,7 @@ urlpatterns = [
     path('', views.getRoutes),
     path('create/', NoticeBoardCreateAPIView.as_view(), name = 'create_board'),
     path('update/<int:pk>/', NoticeBoardUpdateAPIView.as_view(), name='noticeboard-update'),
+    path('destroy/<int:pk>/', NoticeBoardDestroyAPIView.as_view(), name='noticeboard-delete'),
     path('info/', include(router.urls), name = 'noticeboard_info'),
 
 ]

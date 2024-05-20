@@ -46,7 +46,7 @@ class Noice_board_info(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 #게시판 업데이트
-class NoticeBoardUpdateAPIView(generics.GenericAPIView):
+class NoticeBoardUpdateAPIView(generics.UpdateAPIView):
     queryset = NoticeBoard.objects.all()
     serializer_class = NoticeBoardSerializer
 
@@ -58,13 +58,20 @@ class NoticeBoardUpdateAPIView(generics.GenericAPIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# 게시판 삭제 view
+class NoticeBoardDestroyAPIView(generics.DestroyAPIView):
+    queryset = NoticeBoard.objects.all()
+    serializer_class = NoticeBoardSerializer
+
 @api_view(['GET'])
 def getRoutes(request):
     routes = [
-        'noticeboard/create',
-        'noticeboard/update/<int:pk>/',
-        'noticeboard/info',
-        'noticeboard/info/noticeboard/',
-        'noticeboard/info/noticeboard/search-by-title',
+        '/create',
+        '/update/<int:pk>/',
+        '/destroy/<int:pk>/',
+        '/info',
+        '/info/noticeboard/',
+        '/info/noticeboard/search-by-title',
     ]
     return Response(routes)
+
