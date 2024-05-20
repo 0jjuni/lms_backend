@@ -20,3 +20,13 @@ class NoticeBoardSerializer(serializers.ModelSerializer):
         validated_data['author'] = self.context['request'].user
 
         return super().create(validated_data)
+
+#게시판 정보 직렬화
+class NoticeBoardInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NoticeBoard
+        fields = [
+            'author',
+            'title',
+            'date_posted',
+        ]
