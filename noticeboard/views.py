@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework.decorators import api_view, action
 from rest_framework.generics import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .serializers import *
@@ -14,6 +15,7 @@ from base.models import NoticeBoard
 class NoticeBoardCreateAPIView(generics.GenericAPIView):
     queryset = NoticeBoard.objects.all()
     serializer_class = NoticeBoardSerializer
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -49,7 +51,7 @@ class Noice_board_info(viewsets.ModelViewSet):
 class NoticeBoardUpdateAPIView(generics.UpdateAPIView):
     queryset = NoticeBoard.objects.all()
     serializer_class = NoticeBoardSerializer
-
+    permission_classes = [IsAuthenticated]
     def put(self, request, *args, **kwargs):
         obj = get_object_or_404(self.get_queryset(), pk=kwargs.get('pk'))
         serializer = self.get_serializer(obj, data=request.data, partial=False)  # Update the entire instance
