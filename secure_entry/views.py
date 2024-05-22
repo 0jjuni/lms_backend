@@ -36,7 +36,7 @@ def create_student(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
-@permission_classes([IsAdminUser])  # 이제 슈퍼유저만 접근 가능
+@permission_classes([IsAdminUser])
 def create_professor(request):
     serializer = UserProfessorSerializer(data=request.data)
     if serializer.is_valid():
@@ -82,7 +82,7 @@ def change_password(request):
     serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
     if serializer.is_valid():
         serializer.save()
-        return Response({'success': 'Password changed successfully.'}, status=status.HTTP_200_OK)
+        return Response({'success': '비밀번호가 성공적으로 변경되었습니다..'}, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

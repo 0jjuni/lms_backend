@@ -47,7 +47,8 @@ class UserProfessorSerializer(serializers.ModelSerializer):
 
 class ChangePasswordSerializer(serializers.Serializer):
     current_password = serializers.CharField(write_only=True, required=True)
-    new_password = serializers.CharField(write_only=True, required=True, min_length=8)
+    new_password = serializers.CharField(write_only=True, required=True)
+    confirm_new_password = serializers.CharField(write_only=True, required=True)
 
     def validate_current_password(self, value):
         user = self.context['request'].user
@@ -60,8 +61,19 @@ class ChangePasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError('새로운 비밀번호는 최소한 8자리 이상이어야 합니다.')
         return value
 
+    def validate(self, data):
+        new_password = data.get('new_password')
+        confirm_new_password = data.get('confirm_new_password')
+
+        self.validate_new_password(new_password)
+
+        if new_password != confirm_new_password:
+            raise serializers.ValidationError('새로운 비밀번호와 비밀번호 확인이 일치하지 않습니다.')
+        return data
+
     def save(self, **kwargs):
         user = self.context['request'].user
         user.set_password(self.validated_data['new_password'])
         user.save()
         return user
+
