@@ -10,7 +10,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 class StudentSerializer(serializers.ModelSerializer):
     user = UserSerializer()
-    #batch = BatchSerializer()
 
     class Meta:
         model = Student

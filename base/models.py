@@ -4,17 +4,7 @@ from django.utils.translation import gettext_lazy as _
 # Create your models here.
 
 
-class Batch(models.Model):
-    name = models.CharField(
-        max_length=4,
-        blank=False
-    )
 
-    class Meta:
-        verbose_name_plural = "batches"
-
-    def __str__(self) -> str:
-        return self.name
 
 class Announcement(models.Model):
     title = models.CharField(max_length=100, blank=False)

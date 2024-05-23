@@ -2,7 +2,6 @@ from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.utils.translation import gettext_lazy as _
-from base.models import Batch
 
 class UserManager(BaseUserManager):
     def create_user(self, enrollment_number, username, password, **extra_fields):
@@ -33,7 +32,7 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractUser):
-    enrollment_number = models.CharField(max_length=9, unique=True)
+    enrollment_number = models.CharField(max_length=9, unique=True, primary_key=True)
     username = models.CharField(max_length=100, blank=False)
 
     STUDENT = 'S'
@@ -82,7 +81,6 @@ class User(AbstractUser):
 
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-    #batch = models.ForeignKey(Batch, on_delete=models.SET_NULL, null=True)
 
     def __str__(self) -> str:
         return f'{self.user.username}'
