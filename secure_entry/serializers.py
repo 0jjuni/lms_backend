@@ -1,5 +1,4 @@
 from .models import User, Student, Professor
-from base.serializers import BatchSerializer
 from rest_framework import serializers
 from django.contrib.auth.hashers import check_password
 
