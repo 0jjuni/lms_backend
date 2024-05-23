@@ -21,7 +21,7 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
-        extra_fields.setdefault('user_type', None)
+        extra_fields.setdefault('user_type', 'A')
 
         if extra_fields.get('is_staff') is not True:
             raise ValueError(_('슈퍼유저는 is_staff=True 이어야 합니다.'))
@@ -37,9 +37,11 @@ class User(AbstractUser):
 
     STUDENT = 'S'
     PROFESSOR = 'P'
+    ADMIN = 'A'
     USER_TYPE_CHOICES = (
         (STUDENT, 'Student'),
         (PROFESSOR, 'Professor'),
+        (ADMIN, 'Admin'),
     )
     user_type = models.CharField(
         max_length=1,
