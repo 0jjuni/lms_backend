@@ -36,7 +36,7 @@ class NoticeBoard(models.Model):
     text = models.TextField(
         verbose_name=_('text')
     )
-    date_posted = models.DateField(
+    date_posted = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_('date posted')
     )
