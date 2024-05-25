@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from base.models import NoticeBoard
+from .models import base_board
 
 class NoticeBoardSerializer(serializers.ModelSerializer):
 
@@ -13,8 +13,8 @@ class NoticeBoardSerializer(serializers.ModelSerializer):
 
 
     class Meta:
-        model = NoticeBoard
-        fields = '__all__'
+        model = base_board
+        fields = ('author', 'subject_code', 'title', 'text', 'date_posted')
 
     def create(self, validated_data):
         validated_data['author'] = self.context['request'].user
@@ -24,7 +24,7 @@ class NoticeBoardSerializer(serializers.ModelSerializer):
 #게시판 정보 직렬화
 class NoticeBoardInfoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = NoticeBoard
+        model = base_board
         fields = [
             'author',
             'title',

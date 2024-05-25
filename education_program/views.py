@@ -9,6 +9,7 @@ def getRoutes(request):
         '/secure_entry/',
         '/sugang_register/',
         '/noticeboard/',
-        '/swagger/'
+        '/swagger/',
+        '/homework'
     ]
     return Response(routes)

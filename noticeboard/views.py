@@ -6,14 +6,14 @@ from rest_framework.response import Response
 
 from .serializers import *
 from rest_framework import generics, status, viewsets
-from base.models import NoticeBoard
+from .models import base_board
 
 
 # Create your views here.
 
 #NoticeBoard DB인스턴스 추가 ( 게시글 작성 )
 class NoticeBoardCreateAPIView(generics.GenericAPIView):
-    queryset = NoticeBoard.objects.all()
+    queryset = base_board.objects.all()
     serializer_class = NoticeBoardSerializer
     permission_classes = [IsAuthenticated]
 
@@ -28,7 +28,7 @@ class NoticeBoardCreateAPIView(generics.GenericAPIView):
 #게시판 정보 출력 view
 class Noice_board_info(viewsets.ModelViewSet):
     #게시판에 대한 모든 정보 출력
-    queryset = NoticeBoard.objects.all()
+    queryset = base_board.objects.all()
     serializer_class = NoticeBoardInfoSerializer
 
     # title을 이용한 게시글 찾기
@@ -39,7 +39,7 @@ class Noice_board_info(viewsets.ModelViewSet):
             return Response({'error': '제목을 작성하세요'}, status=status.HTTP_400_BAD_REQUEST)
 
         # title에 해당하는 모든 객체를 찾기
-        NoticeBoard_instances = NoticeBoard.objects.filter(title=title)
+        NoticeBoard_instances = base_board.objects.filter(title=title)
         if not NoticeBoard_instances:
             return Response({'error': '게시글을 찾지 못했습니다.'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -49,7 +49,7 @@ class Noice_board_info(viewsets.ModelViewSet):
 
 #게시판 업데이트
 class NoticeBoardUpdateAPIView(generics.UpdateAPIView):
-    queryset = NoticeBoard.objects.all()
+    queryset = base_board.objects.all()
     serializer_class = NoticeBoardSerializer
     permission_classes = [IsAuthenticated]
     def put(self, request, *args, **kwargs):
@@ -62,7 +62,7 @@ class NoticeBoardUpdateAPIView(generics.UpdateAPIView):
 
 # 게시판 삭제 view
 class NoticeBoardDestroyAPIView(generics.DestroyAPIView):
-    queryset = NoticeBoard.objects.all()
+    queryset = base_board.objects.all()
     serializer_class = NoticeBoardSerializer
 
 @api_view(['GET'])

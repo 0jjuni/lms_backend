@@ -42,7 +42,7 @@ class NoticeBoard(models.Model):
     )
 
     class Meta:
-        # abstract = True
+        abstract = True
         verbose_name = _('notice board')
         verbose_name_plural = _('notice boards')
 

@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "team_connect",
     "base",
     "noticeboard",
+    "homework",
 
 ]
 
@@ -173,7 +174,7 @@ SIMPLE_JWT = {
 
     'AUTH_HEADER_TYPES': ('Bearer',),
     'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
-    'USER_ID_FIELD': 'id',
+    'USER_ID_FIELD': 'enrollment_number', #토큰 수정
     'USER_ID_CLAIM': 'user_id',
     'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
 
