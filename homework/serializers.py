@@ -68,3 +68,9 @@ class submissiontSerializer(NoticeBoardSerializer):
         validated_data['author'] = request.user
 
         return super().create(validated_data)
+
+class submissionUpdateSerializer(NoticeBoardSerializer):
+    class Meta:
+        model = Submission
+        fields = ['title', 'text', 'upload', 'date_posted']
+        read_only_fields = ['date_posted']
