@@ -11,15 +11,14 @@ from .serializers import *
 # Create your views here.
 # 과제 등록
 class registerCreateAPIView(generics.GenericAPIView):
-    queryset = Register
+    queryset = Register.objects.all()
     serializer_class = registerSerializer
     permission_classes = [IsAuthenticated]
 
-    def post(self, request,*args, **kwargs):
-        serializer = self.get_serializer(data = request.data)
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
-
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 # 과제글 정보
