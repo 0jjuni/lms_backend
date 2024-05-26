@@ -20,3 +20,14 @@ class Question(NoticeBoard):
     def __str__(self):
         return self.title
 
+
+class Answer(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="qna")
+    subject_code = models.CharField(max_length=10, blank=False)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name= "qna")
+    answer = models.TextField(verbose_name=('text')) #답변
+    date_posted = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)  # 수정 날짜 자동 업데이트
+
+    def __str__(self):
+        return self.answer

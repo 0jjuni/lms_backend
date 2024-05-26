@@ -4,9 +4,8 @@ from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from django.db.models import Q
-
-from .models import Question
-from .serializers import QuestionSerializer, QuestionInfoSerializer
+from .models import Question, Answer
+from .serializers import QuestionSerializer, QuestionInfoSerializer, AnswerSerializer
 from rest_framework.permissions import IsAuthenticated
 # Create your views here.
 
@@ -71,6 +70,46 @@ class QuestionDelete(generics.DestroyAPIView):
         self.perform_destroy(obj)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+#답변 생성
+class AnswerCreateAPIView(generics.GenericAPIView):
+    queryset = Answer.objects.all()
+    serializer_class = AnswerSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#답변 수정
+class AnswerUpdate(generics.UpdateAPIView):
+    queryset = Answer.objects.all()
+    serializer_class = AnswerSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return self.queryset.filter(author = self.request.user)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+#답변 삭제
+class AnswerDelete(generics.DestroyAPIView):
+    queryset = Answer.objects.all()
+    serializer_class = AnswerSerializer
+    permission_classes = [IsAuthenticated]
+
+    def destroy(self, request, *args, **kwargs):
+        obj = get_object_or_404(self.get_queryset(), pk=kwargs.get('pk'))
+
+        if obj.author != request.user:
+            return Response({"권한이 없습니다."},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        return super().destroy(request, *args, **kwargs)
+
+
 @api_view(['GET'])
 def getRoutes(request):
     routes = [
@@ -78,5 +117,8 @@ def getRoutes(request):
         '/update/<int:PK>',
         '/delete/<int:PK>',
         '/questions/',
+        '/answer/'
+        'answer/update/<int:PK>/',
+        'answer/delete/<int:PK>/',
     ]
     return Response(routes)

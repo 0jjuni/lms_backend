@@ -56,15 +56,24 @@ class RegisterDelete(generics.DestroyAPIView):
     serializer_class = registerSerializer
     permission_classes = [IsAuthenticated]
 
-    def delete(self, request, *args, **kwargs):
+    # def delete(self, request, *args, **kwargs):
+    #     obj = get_object_or_404(self.get_queryset(), pk=kwargs.get('pk'))
+    #
+    #     # 사용자와 행위자 동일 확인 여부
+    #     if obj.author != request.user:
+    #         return Response({"detail": "You do not have permission to delete this post."}, status=status.HTTP_403_FORBIDDEN)
+    #
+    #     self.perform_destroy(obj)
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def destroy(self, request, *args, **kwargs):
         obj = get_object_or_404(self.get_queryset(), pk=kwargs.get('pk'))
 
-        # 사용자와 행위자 동일 확인 여부
         if obj.author != request.user:
-            return Response({"detail": "You do not have permission to delete this post."}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"권한이 없습니다."},
+                            status=status.HTTP_403_FORBIDDEN)
 
-        self.perform_destroy(obj)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return super().destroy(request, *args, **kwargs)
 
 #과제제출
 class submissionCreateAPIView(generics.GenericAPIView):
