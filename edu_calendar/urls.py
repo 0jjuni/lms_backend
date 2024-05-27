@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .views import PersonalCalendarViewSet
 
 router = DefaultRouter()
-router.register(r'calendars', PersonalCalendarViewSet)
+router.register(r'', PersonalCalendarViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

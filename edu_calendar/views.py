@@ -3,7 +3,6 @@ from rest_framework import viewsets, permissions
 from .models import PersonalCalendar
 from .serializers import PersonalCalendarSerializer
 
-# Create your views here.
 class IsOwner(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return obj.enrollment_number == request.user
@@ -20,6 +19,9 @@ class PersonalCalendarViewSet(viewsets.ModelViewSet):
         return super().get_permissions()
 
     def perform_create(self, serializer):
+        serializer.save(enrollment_number=self.request.user)
+
+    def perform_update(self, serializer, instance):
         serializer.save(enrollment_number=self.request.user)
 
     def get_queryset(self):
