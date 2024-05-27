@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     "homework",
     "qna",
     "edu_calendar",
-    "subject"
+    "subject",
+    "announcement",
 
 ]
 

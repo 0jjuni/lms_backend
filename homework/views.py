@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics, status, viewsets
 from rest_framework.decorators import api_view
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -97,6 +98,15 @@ class submissionUpdate(generics.UpdateAPIView):
     #사용자의 개시글만 접근 허용
     def get_queryset(self):
         return self.queryset.filter(author=self.request.user)
+
+    # 사용자 권한 검증
+    def get_object(self):
+        obj = super().get_object()
+        if obj.author != self.request.user:
+            # 작성자와 사용자 다른 경우 403발생
+            raise PermissionDenied('접근 권한이 없습니다.')
+        return obj
+
     #제출게시글수정
     def patch(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
