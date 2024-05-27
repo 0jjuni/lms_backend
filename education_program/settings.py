@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "noticeboard",
     "homework",
     "qna",
+    "edu_calendar",
 
 =======
     "courses"
