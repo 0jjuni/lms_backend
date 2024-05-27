@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
+from django.db.models import UniqueConstraint
 # Create your models here.
 
 
@@ -51,8 +52,12 @@ class NoticeBoard(models.Model):
 
 
 
+
+
+
+
 class TimeTable(models.Model):
-    course = models.ForeignKey('courses.Courses', on_delete=models.CASCADE)
+    subject_code = models.ForeignKey('subject.Subject', on_delete=models.CASCADE)
 
     SUNDAY = 0
     MONDAY = 1
@@ -82,3 +87,9 @@ class TimeTable(models.Model):
 
     class Meta:
         verbose_name_plural = "time table"
+        constraints = [
+            UniqueConstraint(fields=['subject_code', 'day'], name='unique_subject_day')
+        ]
+
+    def __str__(self):
+        return f'{self.subject_code} - {self.get_day_display()}'
