@@ -12,5 +12,6 @@ def getRoutes(request):
         '/qna/',
         '/subject/',
         '/calendar/',
+        '/announcement/',
     ]
     return Response(routes)

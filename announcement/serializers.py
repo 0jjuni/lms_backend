@@ -8,15 +8,15 @@ class announcementSerializer(NoticeBoardSerializer):
         model = Announcement
         fields = tuple(NoticeBoardSerializer.Meta.fields)
 
-        def create(self, validated_data):
-            request = self.context['request']
-            user = request.user
+    def create(self, validated_data):
+        request = self.context['request']
+        user = request.user
 
-            subject_code = request.headers.get('Subject-Code')
-            if not subject_code:
-                raise serializers.ValidationError('헤더에 Subject-Code(과목코드)가 없습니다.')
+        subject_code = request.headers.get('Subject-Code')
+        if not subject_code:
+            raise serializers.ValidationError("헤더에 Subject-Code(과목코드)가 없습니다.")
 
 
-            validated_data['author'] = user
-            validated_data['subject_code'] = subject_code
-            return super().create(validated_data)
+        validated_data['author'] = user
+        validated_data['subject_code'] = subject_code
+        return super().create(validated_data)

@@ -122,7 +122,7 @@ class submissionDelete(generics.DestroyAPIView):
 
         # 사용자와 행위자 동일 확인 여부
         if obj.author != request.user:
-            return Response({"detail": "You do not have permission to delete this post."}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"detail": "삭제권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
 
         self.perform_destroy(obj)
         return Response(status=status.HTTP_204_NO_CONTENT)
