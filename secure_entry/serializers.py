@@ -5,7 +5,7 @@ from django.contrib.auth.hashers import check_password
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'enrollment_number', 'username']
+        fields = ['enrollment_number', 'username']
 
 class StudentSerializer(serializers.ModelSerializer):
     user = UserSerializer()
@@ -25,7 +25,7 @@ class ProfessorSerializer(serializers.ModelSerializer):
 class UserStudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'enrollment_number', 'username', 'user_type']
+        fields = ['enrollment_number', 'username', 'user_type']
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data, user_type=User.STUDENT)
@@ -35,7 +35,7 @@ class UserStudentSerializer(serializers.ModelSerializer):
 class UserProfessorSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'enrollment_number', 'username', 'user_type']
+        fields = ['enrollment_number', 'username', 'user_type']
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data, user_type=User.PROFESSOR)

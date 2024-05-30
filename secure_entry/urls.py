@@ -23,7 +23,7 @@ from rest_framework_simplejwt.views import (
 
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
-from .views import MyTokenObtainPairView, userDetail, currentUserDetail,create_student,create_professor,change_password
+from .views import MyTokenObtainPairView, userDetail, currentUserDetail, change_password
 
 urlpatterns = [
 
@@ -32,8 +32,8 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('user/<str:enrollment_number>/', userDetail, name='user_detail'),
     path('user/me/', currentUserDetail, name='current_user_detail'),
-    path('create_student/', create_student, name='create_student'),
-    path('create_professor/', create_professor, name='create_professor'),
+    #path('create_student/', create_student, name='create_student'),
+    #path('create_professor/', create_professor, name='create_professor'),
     path('change_password/', change_password, name='change_password'),
 
 ]

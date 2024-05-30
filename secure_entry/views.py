@@ -26,23 +26,6 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
-@api_view(['POST'])
-@permission_classes([IsAdminUser])  # 이제 슈퍼유저만 접근 가능
-def create_student(request):
-    serializer = UserStudentSerializer(data=request.data)
-    if serializer.is_valid():
-        user = serializer.save()
-        return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['POST'])
-@permission_classes([IsAdminUser])
-def create_professor(request):
-    serializer = UserProfessorSerializer(data=request.data)
-    if serializer.is_valid():
-        user = serializer.save()
-        return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
 def userDetail(request, enrollment_number):

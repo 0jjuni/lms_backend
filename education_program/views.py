@@ -6,11 +6,9 @@ from rest_framework.response import Response
 def getRoutes(request):
     routes = [
         '/admin/',
-        '/secure_entry/',
-        '/sugang_register/',
         '/noticeboard/',
         '/swagger/',
-        '/homework',
-        '/qna',
+        '/homework/',
+        '/qna/',
     ]
     return Response(routes)
