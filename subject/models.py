@@ -1,5 +1,7 @@
 from django.db import models
 from secure_entry.models import Professor
+from secure_entry.models import Student
+
 
 
 class Subject(models.Model):
@@ -21,3 +23,13 @@ class Subject(models.Model):
 
     def __str__(self):
         return self.subject_name
+
+class Enrollment(models.Model):
+    id = models.AutoField(primary_key=True)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    semester = models.CharField(max_length=20)
+    grade = models.FloatField(null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.student.user.username} - {self.subject.subject_name} ({self.semester})'

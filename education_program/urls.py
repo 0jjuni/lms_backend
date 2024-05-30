@@ -42,6 +42,7 @@ urlpatterns = [
     path('secure_entry/', include("secure_entry.urls")),
     path("noticeboard/", include("noticeboard.urls")),
     path("homework/", include("homework.urls")),
+    path("subject/", include("subject.urls")),
     path("qna/", include("qna.urls")),
     path("calendar/", include("edu_calendar.urls")),
     path('', views.getRoutes),
