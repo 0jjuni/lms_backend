@@ -46,11 +46,7 @@ class registeInfoSerializer(NoticeBoardSerializer):
     author = serializers.StringRelatedField()
     class Meta:
         model = Register
-        fields = [
-            'author',
-            'title',
-            'due_date'
-                  ]
+        fields = '__all__'
 
 class submissiontSerializer(NoticeBoardSerializer):
     author = serializers.HiddenField(default=serializers.CurrentUserDefault())

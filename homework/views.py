@@ -27,6 +27,26 @@ class registerInfo(viewsets.ModelViewSet):
     queryset = Register.objects.all()
     serializer_class = registeInfoSerializer
 
+#과제글 정보2업데이트중
+class registerInfo2(generics.ListAPIView):
+    serializer_class = registeInfoSerializer
+    permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        queryset = Register.objects.all()
+        author = self.request.query_params.get('author')
+        title = self.request.query_params.get('title')
+        subject_code = self.request.query_params.get('subject_code')
+
+        if author:
+            queryset = queryset.filter(author__username__icontains=author)
+        if title:
+            queryset = queryset.filter(title__icontains=title)
+        if subject_code:
+            queryset = queryset.filter(subject_code__icontains=subject_code)
+
+        return queryset
+
+
 # 과제글 수정
 class registerUpdate(generics.UpdateAPIView):
     queryset = Register.objects.all()
@@ -39,34 +59,11 @@ class registerUpdate(generics.UpdateAPIView):
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
 
-# 과제글 수정 구버전
-    # def put(self, request, *args, **kwargs):
-    #     obj = get_object_or_404(self.get_queryset(), pk=kwargs.get('pk'))
-    #     # 작성자와 수정자 일치여부 확인
-    #     if obj.author != request.user:
-    #         return  Response({"detail": "권한이 없습니다.(자신이 작성한 글만 수정이 가능합니다."}, status=status.HTTP_403_FORBIDDEN)
-    #     serializer = self.get_serializer(obj, data=request.data, partial=False)  # Update the entire instance
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data, status=status.HTTP_200_OK)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 # 과제글 삭제
 class RegisterDelete(generics.DestroyAPIView):
     queryset = Register.objects.all()
     serializer_class = registerSerializer
     permission_classes = [IsAuthenticated]
-
-    # def delete(self, request, *args, **kwargs):
-    #     obj = get_object_or_404(self.get_queryset(), pk=kwargs.get('pk'))
-    #
-    #     # 사용자와 행위자 동일 확인 여부
-    #     if obj.author != request.user:
-    #         return Response({"detail": "You do not have permission to delete this post."}, status=status.HTTP_403_FORBIDDEN)
-    #
-    #     self.perform_destroy(obj)
-    #     return Response(status=status.HTTP_204_NO_CONTENT)
-
     def destroy(self, request, *args, **kwargs):
         obj = get_object_or_404(self.get_queryset(), pk=kwargs.get('pk'))
 
@@ -130,6 +127,7 @@ class submissionDelete(generics.DestroyAPIView):
 def getRoutes(request):
     routes = [
         '/create/',
+        'read/',
         '/update/<int:PK>',
         '/delete/<int:PK>',
         '/info/',

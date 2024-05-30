@@ -11,7 +11,6 @@ class Register(NoticeBoard):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='homework_registers')
     due_date = models.DateTimeField(null=True, blank=True) #마감시간
     upload = models.FileField(upload_to="C:/Users/kilho/Documents/asyouwrite", null=True, blank=True) # 업로드 파일 경로 지정필요
-
     def __str__(self):
         return self.title
 
