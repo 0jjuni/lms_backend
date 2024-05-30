@@ -36,10 +36,32 @@ class QuestionListView(generics.ListAPIView):
     #P는 모든 게시물, S는 공개 or 자신이 작성한 게시물
     def get_queryset(self):
         user = self.request.user
-        if user.user_type == 'P':
-            return Question.objects.all()
-        else:
-            return Question.objects.filter(Q(status=0) | Q(author=user))
+        queryset = Question.objects.all()
+
+        #필터링
+        author = self.request.query_params.get('author')
+        title = self.request.query_params.get('title')
+        subject_code = self.request.query_params.get('subject_code')
+
+        if author:
+            queryset = queryset.filter(author__username__icontains=author)
+        if title:
+            queryset = queryset.filter(title__icontains=title)
+        if subject_code:
+            queryset = queryset.filter(subject_code__icontains=subject_code)
+
+        if user.user_type != 'P':
+            queryset = queryset.filter(Q(status=0) | Q(author=user))
+
+        return queryset
+
+        # 수정 전
+        # if user.user_type == 'P':
+        #     return Question.objects.all()
+        # else:
+        #     return Question.objects.filter(Q(status=0) | Q(author=user))
+
+
 #질문 수정
 class QuestionUpdate(generics.UpdateAPIView):
     queryset = Question.objects.all()
