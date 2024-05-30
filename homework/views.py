@@ -42,7 +42,7 @@ class registerInfo2(generics.ListAPIView):
         if title:
             queryset = queryset.filter(title__icontains=title)
         if subject_code:
-            queryset = queryset.filter(subject_code__icontains=subject_code)
+            queryset = queryset.filter(subject_code=subject_code)
 
         return queryset
 
