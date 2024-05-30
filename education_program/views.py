@@ -10,5 +10,7 @@ def getRoutes(request):
         '/swagger/',
         '/homework/',
         '/qna/',
+        '/subject/',
+        '/calendar/',
     ]
     return Response(routes)
