@@ -12,6 +12,7 @@ FILE_TYPES = [
         ('txt', 'TXT'),
         ('doc', 'DOC'),
         ('pdf', 'PDF'),
+        ('hwp', 'HWP'),
     ]
 
 # Create your models here.

@@ -21,6 +21,7 @@ class registerSerializer(NoticeBoardSerializer):
         if self.context['request'].method in ['PUT', 'PATCH']:
             self.fields['subject_code'].read_only = True
 
+
     def create(self, validated_data):
         request = self.context['request']
         user = request.user
@@ -33,7 +34,7 @@ class registerSerializer(NoticeBoardSerializer):
         if not subject_code:
             raise serializers.ValidationError("Body에 subject_code(과목코드)가 없습니다.")
 
-        # Enrollment 테이블에서 subject_code 확인
+        # Subject 테이블에서 subject_code 확인
         if not Subject.objects.filter(subject_code=subject_code).exists():
             raise serializers.ValidationError("해당 subject_code(과목코드)가 Subject 테이블에 존재하지 않습니다.")
 
