@@ -54,9 +54,11 @@ class registeInfoSerializer(NoticeBoardSerializer):
         model = Register
         fields = '__all__'
 
+#과제제출
 class submissiontSerializer(NoticeBoardSerializer):
     author = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    assignment = serializers.PrimaryKeyRelatedField(read_only=True)
+    assignment = serializers.PrimaryKeyRelatedField(queryset=Register.objects.all())
+
     subject_code = serializers.CharField(read_only=True)
     class Meta:
         model = Submission
@@ -65,13 +67,14 @@ class submissiontSerializer(NoticeBoardSerializer):
 
     def create(self, validated_data):
         request = self.context['request']
-        #http헤더 assignment정보 받아오기
-        assignment_id = request.headers.get('Assignment')
+
+        assignment_id = validated_data.get('assignment')
+
         if not assignment_id:
-            raise serializers.ValidationError("헤더에 assignment가 없습니다.")
+            raise serializers.ValidationError("Body에 assignment_id(과제ID)가 없습니다.")
 
         try:
-            assignment = Register.objects.get(pk=assignment_id)
+            assignment = Register.objects.get(pk=assignment_id.id)
         except Register.DoesNotExist:
             raise serializers.ValidationError("해당 과제를 찾을 수 없습니다.")
 
@@ -80,6 +83,11 @@ class submissiontSerializer(NoticeBoardSerializer):
         validated_data['author'] = request.user
 
         return super().create(validated_data)
+
+class submissionInfoSerializer(NoticeBoardSerializer):
+    class Meta:
+        model = Register
+        fields = '__all__'
 
 class submissionUpdateSerializer(NoticeBoardSerializer):
     class Meta:

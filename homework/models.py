@@ -24,11 +24,11 @@ class Submission(NoticeBoard):
     assignment = models.ForeignKey(Register, on_delete=models.CASCADE, related_name="submission") #register(과제등록 연결)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="submission") #user(사용자 연결)
     upload = models.FileField(upload_to="C:/Users/kilho/Documents/asyouwrite", null=True, blank=True)  # 업로드 파일 경로 지정필요
-    date_posted = models.DateTimeField(auto_now=True) #수정시 시간 자동 증가.
 
     def save(self, *args, **kwargs):
         if not self.subject_code:
             self.subject_code = self.assignment.subject_code
+        self.date_posted = timezone.now()  # date_posted 필드를 현재 시간으로 갱신
         super().save(*args, **kwargs)
 
     def __str__(self):

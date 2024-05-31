@@ -108,7 +108,25 @@ class submissionUpdate(generics.UpdateAPIView):
     def patch(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
 
-#과제글 삭제
+#제출게시글 Read
+class submissionInfo(generics.ListAPIView):
+    serializer_class = registeInfoSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        assignment_id = self.request.query_params.get('assignment', None)
+        if not assignment_id:
+            raise serializers.ValidationError("Params에 assignment가 없습니다.")
+
+        if user.user_type == 'P':
+            return Submission.objects.filter(assignment_id=assignment_id)
+        else:
+            return Submission.objects.filter(author=user, assignment_id=assignment_id)
+
+
+
+#제출게시글 삭제
 class submissionDelete(generics.DestroyAPIView):
     queryset = Submission.objects.all()
     serializer_class = submissiontSerializer
@@ -132,6 +150,7 @@ def getRoutes(request):
         '/delete/<int:PK>',
         '/info/',
         'submission_create/',
+        "submission_read /",
         'submission_update/<int:PK>',
         'submission_delete/<int:PK>',
     ]
