@@ -2,6 +2,7 @@ from django.db.migrations import serializer
 from rest_framework import serializers
 from noticeboard.serializers import NoticeBoardSerializer
 from .models import Register, Submission
+from subject.models import Subject
 
 
 # NoticeBoard직렬화 상속
@@ -20,16 +21,13 @@ class registerSerializer(NoticeBoardSerializer):
         #과제등록 권한설정
         if user.user_type != 'P':
             raise serializers.ValidationError("과제등록은 교수님만 가능합니다.")
-        #헤더에서 subject_code가져옴
-        # subject_code = request.headers.get('Subject-Code')
         subject_code = validated_data.get('subject_code')
         if not subject_code:
             raise serializers.ValidationError("Body에 subject_code(과목코드)가 없습니다.")
 
-        # try:
-        #     assignment = Register.objects.get(pk=subject_code) #학생 수강 과목 DB생성 후 제작하기
-        # except Register.DoesNotExist:
-        #     raise serializers.ValidationError("해당 과목를 찾을 수 없습니다.")
+        # Enrollment 테이블에서 subject_code 확인
+        if not Subject.objects.filter(subject_code=subject_code).exists():
+            raise serializers.ValidationError("해당 subject_code(과목코드)가 Subject 테이블에 존재하지 않습니다.")
 
 
         validated_data['author'] = user
