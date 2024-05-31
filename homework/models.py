@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from rest_framework.fields import DateTimeField
 
 from base.models import NoticeBoard
@@ -13,6 +14,10 @@ class Register(NoticeBoard):
     upload = models.FileField(upload_to="C:/Users/kilho/Documents/asyouwrite", null=True, blank=True) # 업로드 파일 경로 지정필요
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        self.date_posted = timezone.now()  # date_posted 필드를 현재 시간으로 갱신
+        super().save(*args, **kwargs)
 
 #과제제출
 class Submission(NoticeBoard):

@@ -14,6 +14,12 @@ class registerSerializer(NoticeBoardSerializer):
         model = Register
         fields = tuple(NoticeBoardSerializer.Meta.fields) + ('due_date', 'upload','subject_code',)
 
+    def __init__(self, *args, **kwargs):
+        super(registerSerializer, self).__init__(*args, **kwargs)
+        # 수정 요청인 경우 subject_code 필드를 읽기 전용으로 설정
+        if self.context['request'].method in ['PUT', 'PATCH']:
+            self.fields['subject_code'].read_only = True
+
     def create(self, validated_data):
         request = self.context['request']
         user = request.user
@@ -21,6 +27,7 @@ class registerSerializer(NoticeBoardSerializer):
         #과제등록 권한설정
         if user.user_type != 'P':
             raise serializers.ValidationError("과제등록은 교수님만 가능합니다.")
+
         subject_code = validated_data.get('subject_code')
         if not subject_code:
             raise serializers.ValidationError("Body에 subject_code(과목코드)가 없습니다.")
