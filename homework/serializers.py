@@ -11,7 +11,7 @@ class registerSerializer(NoticeBoardSerializer):
     subject_code = serializers.CharField(required=False)
     class Meta(NoticeBoardSerializer.Meta):
         model = Register
-        fields = tuple(NoticeBoardSerializer.Meta.fields) + ('due_date', 'upload',)
+        fields = tuple(NoticeBoardSerializer.Meta.fields) + ('due_date', 'upload','subject_code',)
 
     def create(self, validated_data):
         request = self.context['request']
@@ -21,9 +21,10 @@ class registerSerializer(NoticeBoardSerializer):
         if user.user_type != 'P':
             raise serializers.ValidationError("과제등록은 교수님만 가능합니다.")
         #헤더에서 subject_code가져옴
-        subject_code = request.headers.get('Subject-Code')
+        # subject_code = request.headers.get('Subject-Code')
+        subject_code = validated_data.get('subject_code')
         if not subject_code:
-            raise serializers.ValidationError("헤더에 Subject-Code(과목코드)가 없습니다.")
+            raise serializers.ValidationError("Body에 subject_code(과목코드)가 없습니다.")
 
         # try:
         #     assignment = Register.objects.get(pk=subject_code) #학생 수강 과목 DB생성 후 제작하기
