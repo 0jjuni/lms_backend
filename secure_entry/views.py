@@ -86,6 +86,17 @@ def create_professor(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(['DELETE'])
+@permission_classes([IsAdminUser])
+def delete_user(request, enrollment_number):
+    try:
+        user = User.objects.get(enrollment_number=enrollment_number)
+        user.delete()  # CASCADE 옵션으로 연관된 Dbd에서도 삭제
+        return Response({'message': '사용자가 성공적으로 삭제되었습니다.'}, status=status.HTTP_204_NO_CONTENT)
+    except User.DoesNotExist:
+        return Response({'error': '해당 학번의 사용자를 찾을 수 없습니다.'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['GET'])
 def getRoutes(request):
@@ -97,5 +108,6 @@ def getRoutes(request):
         '/secure_entry/user/<str:enrollment_number>/',
         '/secure_entry/user/me/',
         '/secure_entry/change_password/',
+        '/secure_entry/delete_user/<str:enrollment_number>/'
     ]
     return Response(routes)
