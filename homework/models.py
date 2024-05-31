@@ -5,6 +5,14 @@ from rest_framework.fields import DateTimeField
 from base.models import NoticeBoard
 from secure_entry.models import User
 
+FILE_TYPES = [
+        ('all', 'All Documents'),
+        ('pptx', 'PPTX'),
+        ('xlsx', 'XLSX'),
+        ('txt', 'TXT'),
+        ('doc', 'DOC'),
+        ('pdf', 'PDF'),
+    ]
 
 # Create your models here.
 #과제등록
@@ -12,6 +20,8 @@ class Register(NoticeBoard):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='homework_registers')
     due_date = models.DateTimeField(null=True, blank=True) #마감시간
     upload = models.FileField(upload_to="C:/Users/kilho/Documents/asyouwrite", null=True, blank=True) # 업로드 파일 경로 지정필요
+    file_type = models.CharField(max_length=10, choices=FILE_TYPES, default='all') #파일 유형 필드
+
     def __str__(self):
         return self.title
 

@@ -10,6 +10,7 @@ from .models import Register, Submission
 from .serializers import *
 
 # Create your views here.
+
 # 과제 등록
 class registerCreateAPIView(generics.GenericAPIView):
     queryset = Register.objects.all()
@@ -22,12 +23,13 @@ class registerCreateAPIView(generics.GenericAPIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-# 과제글 정보
+
+# 과제글 정보, 삭제 예정
 class registerInfo(viewsets.ModelViewSet):
     queryset = Register.objects.all()
     serializer_class = registeInfoSerializer
 
-#과제글 정보2업데이트중
+#과제글 정보
 class registerInfo2(generics.ListAPIView):
     serializer_class = registeInfoSerializer
     permission_classes = [IsAuthenticated]
@@ -73,6 +75,8 @@ class RegisterDelete(generics.DestroyAPIView):
 
         return super().destroy(request, *args, **kwargs)
 
+#과제제출(학생)
+
 #과제제출
 class submissionCreateAPIView(generics.GenericAPIView):
     queryset = Submission.objects.all()
@@ -85,6 +89,22 @@ class submissionCreateAPIView(generics.GenericAPIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#제출게시글 Read
+class submissionInfo(generics.ListAPIView):
+    serializer_class = registeInfoSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        assignment_id = self.request.query_params.get('assignment', None)
+        if not assignment_id:
+            raise serializers.ValidationError("Params에 assignment가 없습니다.")
+
+        if user.user_type == 'P':
+            return Submission.objects.filter(assignment_id=assignment_id)
+        else:
+            return Submission.objects.filter(author=user, assignment_id=assignment_id)
 
 #과제제출수정
 class submissionUpdate(generics.UpdateAPIView):
@@ -108,21 +128,7 @@ class submissionUpdate(generics.UpdateAPIView):
     def patch(self, request, *args, **kwargs):
         return self.partial_update(request, *args, **kwargs)
 
-#제출게시글 Read
-class submissionInfo(generics.ListAPIView):
-    serializer_class = registeInfoSerializer
-    permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        user = self.request.user
-        assignment_id = self.request.query_params.get('assignment', None)
-        if not assignment_id:
-            raise serializers.ValidationError("Params에 assignment가 없습니다.")
-
-        if user.user_type == 'P':
-            return Submission.objects.filter(assignment_id=assignment_id)
-        else:
-            return Submission.objects.filter(author=user, assignment_id=assignment_id)
 
 
 
@@ -141,6 +147,7 @@ class submissionDelete(generics.DestroyAPIView):
 
         self.perform_destroy(obj)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
 @api_view(['GET'])
 def getRoutes(request):
     routes = [
