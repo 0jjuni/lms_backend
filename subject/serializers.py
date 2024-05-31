@@ -4,7 +4,7 @@ from .models import Enrollment, Subject
 class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subject
-        fields = ['subject_code', 'subject_name', 'subject_div', 'professor', 'classroom']
+        fields = '__all__'
 
 
 
