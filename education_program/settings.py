@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "subject",
     "announcement",
     "lecture",
+    "file",
 
 ]
 
