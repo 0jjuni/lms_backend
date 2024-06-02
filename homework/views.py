@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .models import Register, Submission
 from .serializers import *
-from rest_framework.permissions import BasePermission
+from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 from django.http import FileResponse
 # Create your views here.
@@ -31,6 +31,17 @@ class IsMine(BasePermission):
         if request.user.is_authenticated and request.user.user_type == 'S':
             return obj.author == request.user
         return False
+
+class InfoProfessor(BasePermission):
+    message = "해당 작업은 교수님만 수행할 수 있습니다."
+
+    def has_permission(self, request, view):
+        if request.method in SAFE_METHODS:
+            return True
+        # POST나 PUT 요청일 경우 교수님만 접근 가능
+        if request.method in ['POST', 'PUT']:
+            return request.user.is_authenticated and request.user.user_type == 'P'
+        return True
 # 과제 등록
 class RegisterCreateAPIView(generics.GenericAPIView):
     queryset = Register.objects.all()
@@ -48,6 +59,7 @@ class RegisterCreateAPIView(generics.GenericAPIView):
 class RegisterInfo(viewsets.ModelViewSet):
     queryset = Register.objects.all()
     serializer_class = registeInfoSerializer
+    permission_classes = [IsAuthenticated, InfoProfessor]
 
 #과제글 정보
 class RegisterInfo2(generics.ListAPIView):

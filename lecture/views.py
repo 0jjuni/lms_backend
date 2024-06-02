@@ -98,7 +98,7 @@ def getRoutes(request):
     routes = [
         '/create/',
         '/read/',
-        '/download/<int:pk>/'
+        '/download/<int:pk>/',
         '/update/<int:pk>/',
         '/delete/<int:pk>/',
 
