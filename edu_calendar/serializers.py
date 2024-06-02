@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import PersonalCalendar
+from homework.models import Register
 
 class PersonalCalendarSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,3 +16,8 @@ class PersonalCalendarSerializer(serializers.ModelSerializer):
         # Update without enrollment_number, it will be added in the viewset
         validated_data.pop('enrollment_number', None)
         return super().update(instance, validated_data)
+
+class RegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Register
+        fields = ['id', 'title', 'text', 'date_posted', 'due_date', 'upload', 'subject_code']

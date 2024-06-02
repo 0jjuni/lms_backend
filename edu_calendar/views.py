@@ -1,7 +1,9 @@
-from django.shortcuts import render
 from rest_framework import viewsets, permissions
 from .models import PersonalCalendar
-from .serializers import PersonalCalendarSerializer
+from .serializers import PersonalCalendarSerializer, RegisterSerializer
+from homework.models import Register
+from subject.models import Enrollment
+from rest_framework.response import Response
 
 class IsOwner(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -27,3 +29,14 @@ class PersonalCalendarViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         return PersonalCalendar.objects.filter(enrollment_number=user)
+
+class HomeworkListViewSet(viewsets.ViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def list(self, request):
+        student = request.user.student
+        enrollments = Enrollment.objects.filter(student=student)
+        subject_codes = enrollments.values_list('subject__subject_code', flat=True)
+        homeworks = Register.objects.filter(subject_code__in=subject_codes)
+        serializer = RegisterSerializer(homeworks, many=True)
+        return Response(serializer.data)
