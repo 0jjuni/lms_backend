@@ -8,6 +8,8 @@ from rest_framework.response import Response
 from .models import Register, Submission
 from .serializers import *
 from rest_framework.permissions import BasePermission
+
+from django.http import FileResponse
 # Create your views here.
 
 #교수 권한
@@ -17,8 +19,20 @@ class IsProfessor(BasePermission):
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.user_type == 'P'
 
+#다운로드 권한, P면 모두 가능, S면 자신이 작성한 글에 대해서만 가능
+class IsMine(BasePermission):
+    message = '파일 다운로드 권한이 없습니다.'
+
+    def has_object_permission(self, request, view, obj):
+        # 사용자 유형이 'P'인 경우 => 모두 가능
+        if request.user.is_authenticated and request.user.user_type == 'P':
+            return True
+        # 사용자 유형이 'S'인 경우 => 자신이 작성한 글에 대해서만
+        if request.user.is_authenticated and request.user.user_type == 'S':
+            return obj.author == request.user
+        return False
 # 과제 등록
-class registerCreateAPIView(generics.GenericAPIView):
+class RegisterCreateAPIView(generics.GenericAPIView):
     queryset = Register.objects.all()
     serializer_class = registerSerializer
     permission_classes = [IsAuthenticated, IsProfessor]
@@ -31,12 +45,12 @@ class registerCreateAPIView(generics.GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # 과제글 정보, 삭제 예정
-class registerInfo(viewsets.ModelViewSet):
+class RegisterInfo(viewsets.ModelViewSet):
     queryset = Register.objects.all()
     serializer_class = registeInfoSerializer
 
 #과제글 정보
-class registerInfo2(generics.ListAPIView):
+class RegisterInfo2(generics.ListAPIView):
     serializer_class = registeInfoSerializer
     permission_classes = [IsAuthenticated]
     def get_queryset(self):
@@ -56,7 +70,7 @@ class registerInfo2(generics.ListAPIView):
 
 
 # 과제글 수정
-class registerUpdate(generics.UpdateAPIView):
+class RegisterUpdate(generics.UpdateAPIView):
     queryset = Register.objects.all()
     serializer_class = registerSerializer
     permission_classes = [IsAuthenticated]
@@ -84,7 +98,7 @@ class RegisterDelete(generics.DestroyAPIView):
 #과제제출(학생)
 
 #과제제출
-class submissionCreateAPIView(generics.GenericAPIView):
+class SubmissionCreateAPIView(generics.GenericAPIView):
     queryset = Submission.objects.all()
     serializer_class = submissiontSerializer
     permission_classes = [IsAuthenticated]
@@ -97,7 +111,7 @@ class submissionCreateAPIView(generics.GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 #제출게시글 Read
-class submissionInfo(generics.ListAPIView):
+class SubmissionInfo(generics.ListAPIView):
     serializer_class = registeInfoSerializer
     permission_classes = [IsAuthenticated]
 
@@ -113,7 +127,7 @@ class submissionInfo(generics.ListAPIView):
             return Submission.objects.filter(author=user, assignment_id=assignment_id)
 
 #과제제출수정
-class submissionUpdate(generics.UpdateAPIView):
+class SubmissionUpdate(generics.UpdateAPIView):
     queryset = Submission.objects.all()
     serializer_class = submissionUpdateSerializer
     permission_classes = [IsAuthenticated]
@@ -139,7 +153,7 @@ class submissionUpdate(generics.UpdateAPIView):
 
 
 #제출게시글 삭제
-class submissionDelete(generics.DestroyAPIView):
+class SubmissionDelete(generics.DestroyAPIView):
     queryset = Submission.objects.all()
     serializer_class = submissiontSerializer
     permission_classes = [IsAuthenticated]
@@ -154,17 +168,42 @@ class submissionDelete(generics.DestroyAPIView):
         self.perform_destroy(obj)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+#과제등록 파일 다운로드
+class RegisterFileDownloadAPIView(generics.GenericAPIView):
+    queryset = Register.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        register_instance = self.get_object()
+        file_handle = register_instance.upload.path
+        response = FileResponse(open(file_handle, 'rb'))
+        response['Content-Disposition'] = f'attachment; filename="{register_instance.upload.name}"'
+        return response
+
+class SubmissionFileDownloadAPIView(generics.GenericAPIView):
+    queryset = Submission.objects.all()
+    permission_classes = [IsAuthenticated, IsMine]
+
+    def get(self, request, *args, **kwargs):
+        register_instance = self.get_object()
+        file_handle = register_instance.upload.path
+        response = FileResponse(open(file_handle, 'rb'))
+        response['Content-Disposition'] = f'attachment; filename="{register_instance.upload.name}"'
+        return response
+
 @api_view(['GET'])
 def getRoutes(request):
     routes = [
         '/create/',
-        'read/',
+        '/read/',
         '/update/<int:PK>',
         '/delete/<int:PK>',
+        'download/<int:pk>/',
         '/info/',
         'submission_create/',
-        "submission_read /",
+        "submission_read/",
         'submission_update/<int:PK>',
         'submission_delete/<int:PK>',
+        'submission_download/<int:pk>/',
     ]
     return Response(routes)
