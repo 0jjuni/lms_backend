@@ -13,5 +13,6 @@ def getRoutes(request):
         '/subject/',
         '/calendar/',
         '/announcement/',
+        '/lecture/',
     ]
     return Response(routes)

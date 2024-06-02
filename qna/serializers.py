@@ -66,9 +66,6 @@ class AnswerSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         request = self.context['request']
 
-        #교수님 답변
-        if request.user.user_type != 'P':
-            raise serializers.ValidationError("답변은 교수님만 가능합니다.")
 
         #body question 요청
         question  = validated_data.get("question")

@@ -26,10 +26,6 @@ class registerSerializer(NoticeBoardSerializer):
         request = self.context['request']
         user = request.user
 
-        #과제등록 권한설정
-        if user.user_type != 'P':
-            raise serializers.ValidationError("과제등록은 교수님만 가능합니다.")
-
         subject_code = validated_data.get('subject_code')
         if not subject_code:
             raise serializers.ValidationError("Body에 subject_code(과목코드)가 없습니다.")
@@ -42,10 +38,10 @@ class registerSerializer(NoticeBoardSerializer):
         validated_data['author'] = user
         validated_data['subject_code'] = subject_code
 
-        #파일 유효성 검사
-        upload_file = validated_data.get('upload')
-        if upload_file:
-            validated_data['file_type'] = upload_file.name.split('.')[-1].lower()
+        # #파일 유효성 검사
+        # upload_file = validated_data.get('upload')
+        # if upload_file:
+        #     validated_data['file_type'] = upload_file.name.split('.')[-1].lower()
 
         return super().create(validated_data)
 

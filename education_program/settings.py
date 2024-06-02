@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "edu_calendar",
     "subject",
     "announcement",
+    "lecture",
 
 ]
 

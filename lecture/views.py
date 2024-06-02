@@ -1,26 +1,25 @@
 from django.shortcuts import render
-from rest_framework import generics,status
 from rest_framework.decorators import api_view
-from rest_framework.generics import get_object_or_404
 
-from .models import Announcement
-from .serializers import AnnouncementSerializer, AnnouncementInfo
+from .serializers import *
+from .models import lecture
+from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import serializers
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import BasePermission
 # Create your views here.
-#권한 검사
+
+# 교수님 권한 검사
 class IsProfessor(BasePermission):
-    message = '학생계정은 공지사항 작성이 불가능 합니다.'
+    message = '강의자료 작성은 교수님만 가능합니다.'
 
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.user_type != 'S'
-
-#공지사항 등록
-class AnnouncementCreateAPIView(generics.GenericAPIView):
-    queryset = Announcement.objects.all()
-    serializer_class = AnnouncementSerializer
+        return request.user.is_authenticated and request.user.user_type == 'P'
+# 강의자료 생성
+class lectureCreateAPIView(generics.GenericAPIView):
+    queryset = lecture.objects.all()
+    serializer_class = LectureSerializer
     permission_classes = [IsAuthenticated, IsProfessor]
 
     def post(self, request, *args, **kwargs):
@@ -30,12 +29,15 @@ class AnnouncementCreateAPIView(generics.GenericAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-#공지사항 Read기능
-class AnnouncementInfo(generics.ListAPIView):
-    serializer_class = AnnouncementInfo
+
+# 강의자료 Read
+class LectureInfo(generics.ListAPIView):
+    queryset = lecture.objects.all()
+    serializer_class = LectureInfo
     permission_classes = [IsAuthenticated]
+
     def get_queryset(self):
-        queryset = Announcement.objects.all()
+        queryset = lecture.objects.all()
         author = self.request.query_params.get('author')
         title = self.request.query_params.get('title')
         subject_code = self.request.query_params.get('subject_code')
@@ -49,10 +51,10 @@ class AnnouncementInfo(generics.ListAPIView):
 
         return queryset
 
-# 공지사항 수정
-class AnnouncementUpdate(generics.UpdateAPIView):
-    queryset = Announcement.objects.all()
-    serializer_class = AnnouncementSerializer
+# 강의자료 update
+class LectureUpdate(generics.UpdateAPIView):
+    queryset = lecture.objects.all()
+    serializer_class = LectureSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -61,11 +63,13 @@ class AnnouncementUpdate(generics.UpdateAPIView):
             raise serializers.ValidationError("작성자가 작성한 게시글이 없습니다")
         return result
 
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
 
-# 공지사항 삭제
-class AnnoucementDelete(generics.DestroyAPIView):
-    queryset = Announcement.objects.all()
-    serializer_class = AnnouncementSerializer
+# 강의자료 delete
+class LectureDelete(generics.DestroyAPIView):
+    queryset = lecture.objects.all()
+    serializer_class = LectureSerializer
     permission_classes = [IsAuthenticated]
 
     def delete(self, request, *args, **kwargs):

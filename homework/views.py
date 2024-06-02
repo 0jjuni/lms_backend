@@ -5,17 +5,23 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
 from .models import Register, Submission
 from .serializers import *
-
+from rest_framework.permissions import BasePermission
 # Create your views here.
+
+#교수 권한
+class IsProfessor(BasePermission):
+    message = '과제등록은 교수님만 가능합니다.'
+
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.user_type == 'P'
 
 # 과제 등록
 class registerCreateAPIView(generics.GenericAPIView):
     queryset = Register.objects.all()
     serializer_class = registerSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsProfessor]
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data, context={'request': request})
