@@ -45,6 +45,7 @@ urlpatterns = [
     path("subject/", include("subject.urls")),
     path("qna/", include("qna.urls")),
     path("calendar/", include("edu_calendar.urls")),
+    path("mypage/", include("mypage.urls")),
     path("announcement/", include("announcement.urls")),
     path("lecture/", include("lecture.urls")),
     path("file/", include("file.urls")),

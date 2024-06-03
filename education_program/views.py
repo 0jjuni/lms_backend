@@ -12,6 +12,7 @@ def getRoutes(request):
         '/qna/',
         '/subject/',
         '/calendar/',
+        '/mypage/',
         '/announcement/',
         '/lecture/',
     ]
