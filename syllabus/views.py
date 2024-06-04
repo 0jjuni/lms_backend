@@ -72,4 +72,7 @@ class SyllabusDelete(generics.DestroyAPIView):
         return get_object_or_404(Syllabus, subject_code__subject_code=subject_code)
 
     def destroy(self, request, *args, **kwargs):
-        return super().destroy(request, *args, **kwargs)
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({"detail": "수강계획서가 성공적으로 삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
+
