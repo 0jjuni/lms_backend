@@ -45,7 +45,7 @@ class registerSerializer(NoticeBoardSerializer):
     def validate_due_date(self, value):
         if value < timezone.now():
             raise serializers.ValidationError("날짜를 다시 설정해주세요")
-        #수정필요
+
         if value.time() == time(hour=0, minute=0):
             new_date = value.date()  # value 객체의 날짜 정보 추출
             new_time = time(hour=0, minute=0)

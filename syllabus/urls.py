@@ -4,8 +4,7 @@ from announcement import views
 urlpatterns = [
     path('', views.getRoutes),
     path('create/', SyllabusCreateAPIView.as_view(), name ='Syllabus-create'),
-    # path('read/', AnnouncementInfo.as_view(), name ='announcement-create'),
-    # path('update/<int:pk>/', AnnouncementUpdate.as_view(), name ='announcement-update'),
-    # path('delete/<int:pk>/', AnnoucementDelete.as_view(), name ='announcement-delete'),
-
+    path('read/', TotalSyllabus.as_view(), name ='Syllabus-read'),
+    path('update/<str:subject_code>/', SyllabusUpdate.as_view(), name='syllabus-update'),
+    path('delete/<str:subject_code>/', SyllabusDelete.as_view(), name='syllabus-delete'),
 ]

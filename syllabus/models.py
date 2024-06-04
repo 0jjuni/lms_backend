@@ -3,8 +3,7 @@ from subject.models import Subject
 # Create your models here.
 
 class Syllabus(models.Model):
-    subject_code = models.ForeignKey(Subject, on_delete=models.CASCADE)
-    title = models.CharField(max_length=100)
+    subject_code = models.OneToOneField(Subject, on_delete=models.CASCADE)
     text = models.TextField()
 
     def __str__(self):
