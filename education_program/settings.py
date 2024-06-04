@@ -54,6 +54,8 @@ INSTALLED_APPS = [
     "announcement",
     "lecture",
     "file",
+    "syllabus",
+
 
 ]
 
