@@ -1,9 +1,11 @@
+from datetime import time
+
 from django.db.migrations import serializer
 from rest_framework import serializers
 from noticeboard.serializers import NoticeBoardSerializer
 from .models import Register, Submission, FILE_TYPES
 from subject.models import Subject
-
+from django.utils import timezone
 
 # NoticeBoard직렬화 상속 , 과제CUD 사용
 class registerSerializer(NoticeBoardSerializer):
@@ -21,11 +23,9 @@ class registerSerializer(NoticeBoardSerializer):
         if self.context['request'].method in ['PUT', 'PATCH']:
             self.fields['subject_code'].read_only = True
 
-
     def create(self, validated_data):
         request = self.context['request']
         user = request.user
-
         subject_code = validated_data.get('subject_code')
         if not subject_code:
             raise serializers.ValidationError("Body에 subject_code(과목코드)가 없습니다.")
@@ -38,18 +38,16 @@ class registerSerializer(NoticeBoardSerializer):
         validated_data['author'] = user
         validated_data['subject_code'] = subject_code
 
-        # #파일 유효성 검사
-        # upload_file = validated_data.get('upload')
-        # if upload_file:
-        #     validated_data['file_type'] = upload_file.name.split('.')[-1].lower()
-
         return super().create(validated_data)
 
     # 마감날짜 확인
     def validate_due_date(self, value):
-        from django.utils import timezone
         if value < timezone.now():
             raise serializers.ValidationError("날짜를 다시 설정해주세요")
+        #수정필요
+        # if value.time() == time(hour=0, minute=0):
+        #     date_time = value.time()
+        #     value.time = date_time.replace(hour=23, minute=59)
         return value
 
 # Register Read기능관련 직렬화
