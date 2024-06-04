@@ -1,3 +1,4 @@
+import datetime
 from datetime import time
 
 from django.db.migrations import serializer
@@ -45,9 +46,11 @@ class registerSerializer(NoticeBoardSerializer):
         if value < timezone.now():
             raise serializers.ValidationError("날짜를 다시 설정해주세요")
         #수정필요
-        # if value.time() == time(hour=0, minute=0):
-        #     date_time = value.time()
-        #     value.time = date_time.replace(hour=23, minute=59)
+        if value.time() == time(hour=0, minute=0):
+            new_date = value.date()  # value 객체의 날짜 정보 추출
+            new_time = time(hour=0, minute=0)
+            new_datetime = datetime.datetime.combine(new_date, new_time)
+            value = new_datetime + datetime.timedelta(hours=23, minutes=59, seconds=59)
         return value
 
 # Register Read기능관련 직렬화
