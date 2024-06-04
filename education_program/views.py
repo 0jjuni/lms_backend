@@ -15,5 +15,7 @@ def getRoutes(request):
         '/mypage/',
         '/announcement/',
         '/lecture/',
+        '/syllabus/',
+        '/team_connect/',
     ]
     return Response(routes)

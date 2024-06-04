@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "lecture",
     "file",
     "syllabus",
+    "team_connect",
 
 
 ]

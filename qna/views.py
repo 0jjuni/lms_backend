@@ -150,7 +150,7 @@ def getRoutes(request):
         '/delete/<int:PK>',
         '/answer_create/',
         '/answer_read/',
-        'answer_update/<int:PK>/',
-        'answer_delete/<int:PK>/',
+        '/answer_update/<int:PK>/',
+        '/answer_delete/<int:PK>/',
     ]
     return Response(routes)

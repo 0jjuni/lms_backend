@@ -1,19 +1,18 @@
 from rest_framework import serializers
 from noticeboard.serializers import NoticeBoardSerializer
-from .models import Question, Answer
+from .models import *
 from subject.models import Subject
 
-#질문 등록
-class QuestionSerializer(NoticeBoardSerializer):
+class ConnectSerializer(NoticeBoardSerializer):
     subject_code = serializers.CharField(required=False)
-    status = serializers.ChoiceField(choices=Question.public_private, required=False)
+    status = serializers.ChoiceField(choices=Connect.public_private, required=False)
     class Meta(NoticeBoardSerializer.Meta):
-        model = Question
-        fields = tuple(NoticeBoardSerializer.Meta.fields) + ('subject_code', 'status')
+        model = Connect
+        fields = ('id', 'subject_code', 'status') + tuple(NoticeBoardSerializer.Meta.fields)
 
     #수정 요청시, subject_code수정 불가능
     def __init__(self, *args, **kwargs):
-        super(QuestionSerializer, self).__init__(*args, **kwargs)
+        super(ConnectSerializer, self).__init__(*args, **kwargs)
         if self.context['request'].method in ['PUT', 'PATCH']:
             self.fields['subject_code'].read_only = True
 
@@ -26,8 +25,6 @@ class QuestionSerializer(NoticeBoardSerializer):
         if not subject_code:
             raise serializers.ValidationError("바디에 subject_code(과목코드)가 없습니다.")
 
-        # Subject 테이블에서 subject_code 확인
-        # + Enrollment 테이블에서 subject_code 확인 기능 추가 하기
         if not Subject.objects.filter(subject_code=subject_code).exists():
             raise serializers.ValidationError("해당 subject_code(과목코드)가 Subject 테이블에 존재하지 않습니다.")
 
@@ -36,30 +33,20 @@ class QuestionSerializer(NoticeBoardSerializer):
         validated_data['subject_code'] = subject_code
 
         if 'status' not in validated_data:
-            validated_data['status'] = Question.public
+            validated_data['status'] = Connect.recruit
         return super().create(validated_data)
 
-class QuestionInfoSerializer(NoticeBoardSerializer):
-    author = serializers.StringRelatedField()
-
-    class Meta:
-        model = Question
-        fields = '__all__'
-
-
-
-# 질문 답변 Body question요청
-class AnswerSerializer(serializers.ModelSerializer):
-    question = serializers.PrimaryKeyRelatedField(queryset=Question.objects.all())
+class ConnectAnswerSerializer(serializers.Serializer):
+    connect = serializers.PrimaryKeyRelatedField(queryset=Connect.objects.all())
     subject_code = serializers.CharField(read_only=True)
     author = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    answer = serializers.CharField()
+    text = serializers.CharField() #자기소개
     date_posted = serializers.DateTimeField(read_only=True)
 
     class Meta:
-        model = Answer
+        model = Connect_answer
         fields = [
-            "id", "question", "subject_code", "author", "answer", "date_posted"
+            "id", "connect", "subject_code", "author", "text", "date_posted"
         ]
         read_only_fields = ['subject_code', 'date_posted']
 
@@ -68,24 +55,17 @@ class AnswerSerializer(serializers.ModelSerializer):
 
 
         #body question 요청
-        question = validated_data.get("question")
-        if not question:
-            raise serializers.ValidationError("Body에 question_id이 없습니다.")
+        connect = validated_data.get("connect")
+        if not connect:
+            raise serializers.ValidationError("Body에 connect가 없습니다.")
 
         try:
-            question = Question.objects.get(pk=question.id)
-        except Question.DoesNotExist:
+            Connection = Connect.objects.get(pk=Connect.id)
+        except Connect.DoesNotExist:
             raise serializers.ValidationError("해당 질문을 찾을 수 없습니다.")
 
-        validated_data['question'] = question
-        validated_data['subject_code'] = question.subject_code
+        validated_data['connect'] = connect
+        validated_data['subject_code'] = connect.subject_code
         validated_data['author'] = request.user
 
         return super().create(validated_data)
-
-class AnswerInfoSerializer(serializers.ModelSerializer):
-    question = serializers.StringRelatedField()
-
-    class Meta:
-        model = Answer
-        fields = '__all__'
