@@ -185,4 +185,7 @@ cython_debug/
 
 
 # 마이그레이션 관련 모두 무시
-**/migrations/
+**/migrations/*
+
+# Except __init__.py
+!**/migrations/__init__.py
