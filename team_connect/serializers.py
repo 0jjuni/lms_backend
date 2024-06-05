@@ -37,7 +37,7 @@ class ConnectSerializer(NoticeBoardSerializer):
             validated_data['status'] = Connect.recruit
         return super().create(validated_data)
 
-class ConnectAnswerSerializer(serializers.Serializer):
+class ConnectAnswerSerializer(serializers.ModelSerializer):
     connect = serializers.PrimaryKeyRelatedField(queryset=Connect.objects.all())
     subject_code = serializers.CharField(read_only=True)
     author = serializers.PrimaryKeyRelatedField(read_only=True)
