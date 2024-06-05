@@ -182,3 +182,7 @@ cython_debug/
 .idea/sqlDataSources.xml
 .idea/dynamic.xml
 .idea/uiDesigner.xml
+
+
+# 마이그레이션 관련 모두 무시
+**/migrations/
