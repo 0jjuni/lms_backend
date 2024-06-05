@@ -5,7 +5,7 @@ from django.utils import timezone
 # Create your models here.
 
 class Connect(NoticeBoard):
-    author = models.ForeignKey(User, on_delete=models.CASCADE, )
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
 
     recruit = 0
     fin_recruit = 1
@@ -29,9 +29,9 @@ class Connect(NoticeBoard):
 
 
 class Connect_answer(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     connect = models.ForeignKey(Connect, on_delete=models.CASCADE, related_name="connect")
     subject_code = models.CharField(max_length=10, blank=False)
-    author = models.ForeignKey(User, on_delete=models.CASCADE,)
     text = models.TextField(verbose_name=('text')) # 자기 소개
     date_posted = models.DateTimeField(auto_now_add=True)
 

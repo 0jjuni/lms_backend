@@ -4,11 +4,12 @@ from .models import *
 from subject.models import Subject
 
 class ConnectSerializer(NoticeBoardSerializer):
+    author = serializers.PrimaryKeyRelatedField(read_only=True)
     subject_code = serializers.CharField(required=False)
     status = serializers.ChoiceField(choices=Connect.public_private, required=False)
     class Meta(NoticeBoardSerializer.Meta):
         model = Connect
-        fields = ('id', 'subject_code', 'status') + tuple(NoticeBoardSerializer.Meta.fields)
+        fields = ('id', 'subject_code', 'status', 'author') + NoticeBoardSerializer.Meta.fields
 
     #수정 요청시, subject_code수정 불가능
     def __init__(self, *args, **kwargs):
@@ -39,34 +40,25 @@ class ConnectSerializer(NoticeBoardSerializer):
 class ConnectAnswerSerializer(serializers.Serializer):
     connect = serializers.PrimaryKeyRelatedField(queryset=Connect.objects.all())
     subject_code = serializers.CharField(read_only=True)
-    author = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    text = serializers.CharField() #자기소개
+    author = serializers.PrimaryKeyRelatedField(read_only=True)
+    text = serializers.CharField()
     date_posted = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = Connect_answer
         fields = [
-            "id", "connect", "subject_code", "author", "text", "date_posted"
+            "id", "author", "connect", "subject_code", "text", "date_posted"
         ]
         read_only_fields = ['subject_code', 'date_posted']
 
     def create(self, validated_data):
         request = self.context['request']
-
-
-        #body question 요청
         connect = validated_data.get("connect")
         if not connect:
-            raise serializers.ValidationError("Body에 connect가 없습니다.")
+            raise serializers.ValidationError("Body does not contain connect.")
 
-        try:
-            connect_instance = Connect.objects.get(pk=connect.id)
-        except Connect.DoesNotExist:
-            raise serializers.ValidationError("해당 질문을 찾을 수 없습니다.")
-
-        validated_data['subject_code'] = connect_instance.subject_code
+        validated_data['subject_code'] = connect.subject_code
         validated_data['author'] = request.user
-
         return Connect_answer.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
