@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.generics import get_object_or_404
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, ValidationError
 from .models import *
 from .serializers import *
 # Create your views here.
@@ -48,15 +48,14 @@ class ConnectDelete(generics.DestroyAPIView):
         return self.queryset.filter(author=self.request.user)
 
     def delete(self, request, *args, **kwargs):
-        obj = get_object_or_404(self.get_queryset(), pk=kwargs.get('pk'))
+        user_queryset = self.get_queryset()
+        if not user_queryset.exists():
+            raise ValidationError("권한이 없습니다.")
 
-        # 사용자와 행위자 동일 확인 여부
-        if obj.author != request.user:
-            return Response({"권한이 없습니다."},
-                            status=status.HTTP_403_FORBIDDEN)
+        obj = get_object_or_404(user_queryset, pk=kwargs.get('pk'))
 
         self.perform_destroy(obj)
-        return Response({"삭제가 완료 되었습니다."},status=status.HTTP_204_NO_CONTENT)
+        return Response({"삭제가 완료 되었습니다."}, status=status.HTTP_204_NO_CONTENT)
 
 #팀원 모집글 Read
 class ConnectInfo(generics.ListAPIView):
