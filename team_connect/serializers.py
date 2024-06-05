@@ -60,12 +60,16 @@ class ConnectAnswerSerializer(serializers.Serializer):
             raise serializers.ValidationError("Body에 connect가 없습니다.")
 
         try:
-            Connection = Connect.objects.get(pk=Connect.id)
+            connect_instance = Connect.objects.get(pk=connect.id)
         except Connect.DoesNotExist:
             raise serializers.ValidationError("해당 질문을 찾을 수 없습니다.")
 
-        validated_data['connect'] = connect
-        validated_data['subject_code'] = connect.subject_code
+        validated_data['subject_code'] = connect_instance.subject_code
         validated_data['author'] = request.user
 
-        return super().create(validated_data)
+        return Connect_answer.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.text = validated_data.get('text', instance.text)
+        instance.save()
+        return instance

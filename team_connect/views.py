@@ -94,6 +94,9 @@ class ConnectAnswerCreateAPIView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data, context={'request': request})
         if serializer.is_valid():
+            connect = serializer.validated_data.get("connect")
+            if connect.status == 1:
+                return Response({"detail": "모집 완료된 글에는 답변을 작성할 수 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -105,11 +108,13 @@ class ConnectAnswerUpdate(generics.UpdateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        filtered_queryset = queryset.filter(author=self.request.user)
-        if not filtered_queryset.exists():
-            raise PermissionDenied("수정권한이 없습니다.")
-        return filtered_queryset
+        return self.queryset.filter(author=self.request.user)
+
+    def perform_update(self, serializer):
+        instance = self.get_object()
+        if instance.author != self.request.user:
+            raise PermissionDenied("수정 권한이 없습니다.")
+        serializer.save()
 
 #팀원모집글 신청서 read_댓글형식
 class ConnectAnswerInfo(generics.ListAPIView):
