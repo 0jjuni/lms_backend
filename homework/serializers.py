@@ -43,14 +43,15 @@ class registerSerializer(NoticeBoardSerializer):
 
     # 마감날짜 확인
     def validate_due_date(self, value):
-        if value < timezone.now():
-            raise serializers.ValidationError("날짜를 다시 설정해주세요")
+        if value is not None:
+            if value < timezone.now():
+                raise serializers.ValidationError("날짜를 다시 설정해주세요")
 
-        if value.time() == time(hour=0, minute=0):
-            new_date = value.date()  # value 객체의 날짜 정보 추출
-            new_time = time(hour=0, minute=0)
-            new_datetime = datetime.datetime.combine(new_date, new_time)
-            value = new_datetime + datetime.timedelta(hours=23, minutes=59, seconds=59)
+            if value.time() == time(hour=0, minute=0):
+                new_date = value.date()  # value 객체의 날짜 정보 추출
+                new_time = time(hour=0, minute=0)
+                new_datetime = datetime.datetime.combine(new_date, new_time)
+                value = new_datetime + datetime.timedelta(hours=23, minutes=59, seconds=59)
         return value
 
 # Register Read기능관련 직렬화
