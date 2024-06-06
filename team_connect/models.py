@@ -36,4 +36,4 @@ class Connect_answer(models.Model):
     date_posted = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.answer
+        return self.text
