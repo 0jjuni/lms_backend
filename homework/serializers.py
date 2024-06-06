@@ -10,7 +10,7 @@ from django.utils import timezone
 
 # NoticeBoard직렬화 상속 , 과제CUD 사용
 class registerSerializer(NoticeBoardSerializer):
-    due_date = serializers.DateTimeField()
+    due_date = serializers.DateTimeField(required=False, allow_null=True)
     upload = serializers.FileField(required=False, allow_empty_file=True, allow_null=True)
     subject_code = serializers.CharField(required=False)
     file_type = serializers.ChoiceField(choices=FILE_TYPES)

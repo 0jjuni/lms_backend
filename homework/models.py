@@ -19,7 +19,7 @@ FILE_TYPES = [
 #과제등록
 class Register(NoticeBoard):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='homework_registers')
-    due_date = models.DateTimeField(null=True, blank=True) #마감시간
+    due_date = models.DateTimeField(null=True, blank=True, default=None) #마감시간
     upload = models.FileField(upload_to="C:/Users/kilho/Documents/asyouwrite", null=True, blank=True) # 업로드 파일 경로 지정필요
     file_type = models.CharField(max_length=10, choices=FILE_TYPES, default='all') #파일 유형 필드
 
