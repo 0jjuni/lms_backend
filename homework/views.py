@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics, status, viewsets
 from rest_framework.decorators import api_view
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -118,6 +118,12 @@ class SubmissionCreateAPIView(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data, context={'request': request})
         if serializer.is_valid():
+            assignment_id = serializer.validated_data.get('assignment').id
+            assignment = Register.objects.get(id=assignment_id)
+            # 과제 제출 기한 검사
+            if assignment.due_date and assignment.due_date < timezone.now():
+                return Response({"detail": "과제 제출 기한이 지났습니다."}, status=status.HTTP_400_BAD_REQUEST)
+
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -158,6 +164,12 @@ class SubmissionUpdate(generics.UpdateAPIView):
 
     #제출게시글수정
     def patch(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        # 과제 제출 기한 검사
+        if instance.assignment.due_date and instance.assignment.due_date < timezone.now():
+            raise ValidationError("과제 제출 기한이 지났습니다. 수정이 불가능합니다.")
+
         return self.partial_update(request, *args, **kwargs)
 
 
